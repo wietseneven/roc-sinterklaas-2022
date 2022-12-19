@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "socket.io": "^4.5.4",
     "socket.io-client": "^3.1.1",
     "three": "^0.147.0",
     "vanta": "^0.5.24",
