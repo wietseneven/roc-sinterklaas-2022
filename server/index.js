@@ -10,8 +10,10 @@ io.on("connection", (socket) => {
     const name = username.toLowerCase().trim();
     if (name !== 'siepy') {
       socket.emit('username error', { message: 'Dit is niet voor jou!' });
+      socket.broadcast.emit("username error", { message: "Iemand vult de verkeerde naam in! "});
     } else {
       socket.emit('username success', { message: 'Welkom Siepy, laten we beginnen!' });
+      socket.broadcast.emit("username success", { message: "Iemand vult de goede naam in! "});
     }
   });
 

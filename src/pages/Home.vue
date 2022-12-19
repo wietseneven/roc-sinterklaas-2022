@@ -27,6 +27,7 @@
       </p>
 
       <hr />
+      <router-link class="button" to="/opdracht/1">Begin de zoektocht</router-link>
     </container>
   </div>
 </template>
@@ -43,3 +44,14 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .button {
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 0.5em;
+    margin: 0.5em 0;
+    display: block;
+    text-align: center;
+  }
+</style>
