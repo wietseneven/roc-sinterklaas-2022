@@ -39,6 +39,5 @@
     1px -1px 0 var(--color-stroke),
     -1px 1px 0 var(--color-stroke),
      7px 1px 0 var(--color-stroke);
-  transform: translateX(-0.5em);
 }
 </style>
