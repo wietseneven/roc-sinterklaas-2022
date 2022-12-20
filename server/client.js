@@ -1,9 +1,14 @@
 // import { io } from "socket.io-client";
 const { io } = require("socket.io-client");
+const axios = require("axios");
 
-const URL = "https://api.sinterklaas2022.mediavormgever.online";
+// const URL = "https://api.sinterklaas2022.mediavormgever.online";
+const URL = "http://localhost:3000";
 const LIGHTS_URL = "http://192.168.1.199";
-const socket = io(URL, { autoConnect: true, auth: { username: "client-server" } });
+const socket = io(URL, {
+  autoConnect: true,
+  auth: { username: "client-server" },
+});
 
 const states = {
   default: {
@@ -52,6 +57,17 @@ const states = {
         mi: false,
       },
     ],
+  },
+  resetSegments: {
+    seg: [
+      {
+        start: 0,
+        stop: 221,
+        sel: true,
+      },
+    ],
+    v: true,
+    time: 1671488036,
   },
   error: {
     on: true,
@@ -296,29 +312,63 @@ const states = {
   },
 };
 
-const setState = async (state) => {
-  const response = await fetch(`${LIGHTS_URL}/json/state`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(states[state]),
-  });
-  const result = await response.json();
-  console.log(result);
+let jumpInterval;
+
+const setState = async (state, customState) => {
+  const response = await axios.post(
+    `${LIGHTS_URL}/json/state`,
+    customState || states[state]
+  );
+  console.log(response.data);
 };
 
+const resetSegments = async () => {
+  const { data } = await axios.get(`${LIGHTS_URL}/json`);
+  if (!data.state?.seg) return;
+  const newState = { ...states.resetSegments };
+  data.state.seg.forEach((seg, index) => {
+    if (index < 1) return;
+    newState.seg.push({ stop: 0 });
+  });
+  await axios.post(`${LIGHTS_URL}/json/state`, newState);
+};
 
-const init = () => {
-  setState('default');
-  
+const createSegments = (nSegments) => {
+  const groupSize = 5;
+  const nLeds = 221;
+  const demoNLeds = nLeds / (groupSize + 1);
+
+  var arr = [];
+  while (arr.length < nSegments) {
+    var r = Math.floor(Math.random() * demoNLeds) + 1;
+    if (
+      arr.indexOf(r) === -1 &&
+      arr.indexOf(r - 1) === -1 &&
+      arr.indexOf(r + 1) === -1
+    )
+      arr.push(r);
+  }
+
+  const result = arr.sort().map((startBase) => {
+    const start = startBase * groupSize;
+    const stop = start + groupSize;
+    return { start, stop, len: groupSize };
+  });
+
+  return result;
+};
+
+const init = async () => {
+  setState("default");
+  resetSegments();
+
+  createSegments(2);
+
   socket.onAny((event, ...args) => {
     console.log(event, args);
   });
 
-  socket.io.on("connection", () => {
-
-  })
+  socket.io.on("connection", () => {});
 
   socket.io.on("error", (error) => {
     // ...
@@ -327,14 +377,69 @@ const init = () => {
 
   socket.on("user connected", (message) => {
     console.log({ message });
-  })
+  });
 
   socket.on("private message", ({ content, to }) => {
     console.log({ content, to });
   });
 
+  socket.on("error", async (response) => {
+    const after = response?.after;
+    let prevState;
+    if (after === "prevState") {
+      const { data } = await axios.get(`${LIGHTS_URL}/json`);
+      prevState = data.state;
+    } else {
+      clearInterval(jumpInterval);
+    }
+    setState("error");
+    setTimeout(() => {
+      setState("default", prevState);
+    }, 4500);
+  });
+
+  socket.on("success", async (response) => {
+    const after = response?.after;
+    let prevState;
+    if (after === "prevState") {
+      const { data } = await axios.get(`${LIGHTS_URL}/json`);
+      prevState = data.state;
+    } else {
+      clearInterval(jumpInterval);
+    }
+    setState("success");
+    setTimeout(() => {
+      setState("default", prevState);
+    }, 4500);
+  });
+
+  const setSegementedLight = (data) => {
+    const segments = createSegments(data.lights);
+
+    const newState = { ...states.pieces4, seg: [states.pieces4.seg[0]] };
+    segments.forEach((segment, index) => {
+      newState.seg.push({
+        ...states.pieces4.seg[1],
+        ...segment,
+        id: index + 1,
+      });
+    });
+    setState("custom", newState);
+  }
+
+  socket.on("lights", (data) => {
+    clearInterval(jumpInterval);
+    setSegementedLight(data);
+
+    if (data.jump) {
+      jumpInterval = setInterval(() => {
+        setSegementedLight(data);
+      }, data.jump);
+    }
+  });
+
   // export default socket;
-  console.log('asf');
-}
+  console.log("asf");
+};
 
 init();

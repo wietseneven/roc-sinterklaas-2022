@@ -10,10 +10,10 @@ io.on("connection", (socket) => {
     const name = username.toLowerCase().trim();
     if (name !== 'siepy') {
       socket.emit('username error', { message: 'Dit is niet voor jou!' });
-      socket.broadcast.emit("username error", { message: "Iemand vult de verkeerde naam in! "});
+      socket.broadcast.emit("error", { message: "Iemand vult de verkeerde naam in! "});
     } else {
       socket.emit('username success', { message: 'Welkom Siepy, laten we beginnen!' });
-      socket.broadcast.emit("username success", { message: "Iemand vult de goede naam in! "});
+      socket.broadcast.emit("success", { message: "Iemand vult de goede naam in! "});
     }
   });
 
@@ -28,6 +28,17 @@ io.on("connection", (socket) => {
   // notify users upon disconnection
   socket.on("disconnect", () => {
     socket.broadcast.emit("user disconnected", socket.id);
+  });
+
+  socket.on("lights", (value) => {
+    socket.broadcast.emit("lights", value);
+  });
+
+  socket.on("success", (data) => {
+    socket.broadcast.emit("success", { message: "Success", ...data });
+  });
+  socket.on("error", (data) => {
+    socket.broadcast.emit("error", { message: "error", ...data });
   });
 });
 

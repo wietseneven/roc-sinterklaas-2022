@@ -1,7 +1,7 @@
 <template>
   <div :class="{ transitioning: transitioning }" ref="vantaRef" id="app">
     <transition :name="transitionName">
-      <router-view></router-view>
+      <router-view :key="$route.path"></router-view>
     </transition>
   </div>
 </template>
@@ -138,6 +138,8 @@ body {
 .vanta-canvas {
   transition: opacity 1.4s;
   z-index: -1 !important;
+  position: fixed !important;
+  inset: 0;
 }
 
 .transitioning .vanta-canvas {
