@@ -3,6 +3,16 @@
     <Logo />
     <container>
       <p>Lieve Siepy,</p>
+
+      <p>Altijd vrolijk en enthousiast,<br/>
+      Dat is hoe de Sint Siepy graag omschrijven mag.
+      </p>
+
+      <p>
+        Altijd in voor avontuur en frisse ideëen,<br />
+        Daarbij dacht de Sint, mag een puzzel naar een cadeau niet ontbreken!
+      </p>
+
       <p>De zoektocht naar het sinterklaascadeau is weer begonnen<br />
       En daarom wil ik jou met een gedicht verwelkomen</p>
 
@@ -15,16 +25,14 @@
       <p>Maar wat het ook is, we gaan het samen zoeken<br />
       En ik weet zeker dat we het cadeau voor jou zullen vinden</p>
 
-      <p>Dus pak je schoen, zet hem klaar bij de deur<br />
-      Want Sinterklaas is weer in het land en hij heeft voor jou een verrassing in petto, dat is zeker</p>
-
-      <p>Geniet van de zoektocht en laat ons weten wat je graag wilt hebben<br />
-      Want Sinterklaas en ik willen graag jouw wensen vervullen</p>
+      <p>Geniet van de zoektocht en de cadeaus!</p>
 
       <p>
         Groeten,<br />
         Sint
       </p>
+
+      <p><small>P.s. als je de LED-strip heel mooi vind mag je hem graag hebben, anders, doneer hem met liefde aan BuROC waar we er nog wat leuks mee kunnen doen.</small></p>
 
       <hr />
       <router-link class="button" to="/opdracht/1">Begin de zoektocht</router-link>

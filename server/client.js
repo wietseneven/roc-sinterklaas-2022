@@ -2,9 +2,9 @@
 const { io } = require("socket.io-client");
 const axios = require("axios");
 
-// const URL = "https://api.sinterklaas2022.mediavormgever.online";
-const URL = "http://localhost:3000";
-const LIGHTS_URL = "http://192.168.1.199";
+const URL = "https://api.sinterklaas2022.mediavormgever.online";
+// const URL = "http://localhost:3000";
+const LIGHTS_URL = "http://sinterled.local";
 const socket = io(URL, {
   autoConnect: true,
   auth: { username: "client-server" },
@@ -362,18 +362,17 @@ const init = async () => {
   setState("default");
   resetSegments();
 
-  createSegments(2);
-
   socket.onAny((event, ...args) => {
     console.log(event, args);
   });
 
   socket.io.on("connection", () => {});
 
-  socket.io.on("error", (error) => {
-    // ...
-    console.error(error);
-  });
+  // socket.io.on("error", (error) => {
+  //   // ...
+  //   console.log('here')
+  //   console.error(error);
+  // });
 
   socket.on("user connected", (message) => {
     console.log({ message });
@@ -384,6 +383,7 @@ const init = async () => {
   });
 
   socket.on("error", async (response) => {
+    console.log("here");
     const after = response?.after;
     let prevState;
     if (after === "prevState") {
@@ -437,9 +437,6 @@ const init = async () => {
       }, data.jump);
     }
   });
-
-  // export default socket;
-  console.log("asf");
 };
 
 init();
